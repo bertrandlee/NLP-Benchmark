@@ -1,0 +1,11 @@
+*.swp
+__pycache__/*
+*.pyc
+*Summary*
+*Results*
+*.json
+*.bak
+*ods#
+tmp/
+backup/
+venv/
