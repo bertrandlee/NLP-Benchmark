@@ -265,7 +265,7 @@ def callDFBot(MatchedIntents_DF, input_data,ses):
             #print("Detected intent=", response.query_result.intent.display_name)
             matchedIntents_DF=response.query_result.intent.display_name.lower()
             score=response.query_result.intent_detection_confidence #Getting the confidence score.
-            if(matchedIntents_DF=='Default Fallback Intent'):
+            if(matchedIntents_DF=='default fallback intent'):
                 matchedIntents_DF='None'
         else:
             matchedIntents_DF='None'
