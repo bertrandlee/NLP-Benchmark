@@ -6,6 +6,7 @@ from googleDF import *
 from kore import *
 from luis import *
 from watson import *
+from taiger import *
 import wit
 
 #Global varibles used for reading input from the csv file
@@ -90,9 +91,18 @@ def main():
           #print("Adding train utterances")
         else:
           witBotToken=""
+        
+        if USETAIGER:
+            print("Create Taiger bot")
+            taigerAccessToken, taigerBotId, taigerLibraryId = TaigerCreateBot(botName)
+            print("Adding intents and train utterances")
+            for j in tqdm(range(len(intentset))):
+                TaigerAddIntentAndUtterance(taigerAccessToken, taigerLibraryId, intentset[j],input2[intentset[j]])
+            print("Training Taiger bot")
+            TaigerTrainBot(taigerAccessToken, taigerBotId)
 
         print("Creating the config file (testconfig.json) for the runTest.py file.")
-        createConfigFile(botName,botIdKore,userIdKore,authTokenKore,KorePlatform,urlL[0],botIdDF,Token_DF,Client_DF,watsonBotId,witBotToken)
+        createConfigFile(botName,botIdKore,userIdKore,authTokenKore,KorePlatform,urlL[0],botIdDF,Token_DF,Client_DF,watsonBotId,witBotToken,taigerAccessToken,taigerBotId)
 
 def prepLuis(intentset,intents,utterances,botIdLuis):
         print("Creating intents in luis")
@@ -127,7 +137,7 @@ def prepKore(intentset, intents, utterances,botIdKore,userIdKore,authTokenKore, 
         print("Training of the Kore bot with full Data")
         trainKore(botIdKore,userIdKore,authTokenKore,KorePlatform)
 
-def createConfigFile(botName,botIdKore,userIdKore,authTokenKore,KorePlatform,urlL,botIdDF,Token_DF,Client_DF,watsonBotId,witBotToken):
+def createConfigFile(botName,botIdKore,userIdKore,authTokenKore,KorePlatform,urlL,botIdDF,Token_DF,Client_DF,watsonBotId,witBotToken,taigerAccessToken,taigerBotId):
 	config= {
 		"botname_Kore":	botName,
 		"uid_Kore":userIdKore,
@@ -146,6 +156,9 @@ def createConfigFile(botName,botIdKore,userIdKore,authTokenKore,KorePlatform,url
 		"watsonBotId":watsonBotId,
 		"USEWIT":USEWIT,
 		"witBotToken":witBotToken,
+         "USETAIGER":USETAIGER,
+         "taigerAccessToken":taigerAccessToken,
+         "taigerBotId":taigerBotId,
 		"lang":lang,
 		"RESULTSFILE":RESULTSFILE,
                 "threshold" : threshold

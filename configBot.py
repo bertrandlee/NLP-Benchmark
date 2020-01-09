@@ -18,6 +18,7 @@ USEGOOGLE =  conf["USEGOOGLE"]  #False
 USELUIS =  conf["USELUIS"]  #False
 USEWATSON =  conf["USEWATSON"]  #False
 USEWIT =  conf["USEWIT"]  #False
+USETAIGER = conf["USETAIGER"]
 
 # Kore.ai
 KorePlatform =  conf["KorePlatform"]  #"https://bots.kore.ai"
@@ -41,4 +42,8 @@ watson_passwd =  conf["watson_passwd"]
 
 # Wit.ai
 witUserToken =  conf["witUserToken"]  
+
+#Taiger
+taiger_uid = conf["taiger_uid"]
+taiger_passwd = conf["taiger_passwd"]
 

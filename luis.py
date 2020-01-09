@@ -16,12 +16,14 @@ def createLuisBot(botname):
         return response.text.strip('"')            
 
 def addLuisIntent(Input,botIdLuis):
+        print("Adding Luis intent =", Input)
         url = "https://westus.api.cognitive.microsoft.com/luis/api/v2.0//apps/"+botIdLuis+"/versions/0.1/intents"
         payload = {"name":Input}
         try:
                 response = requests.post(url, json=payload, headers=headerLuis)
         except:
                 raise Exception("Error while creating an Intent in Luis")        
+        print("Add Luis intent result =", response.text)
 
         return response.text
 
@@ -81,7 +83,7 @@ def getLuisEndPointUrl(botIdLuis):
                 time.sleep(5)
         
         print("Waiting for bots to train") 
-#        time.sleep(60) #Leaving 1 minute time for training the Luis bot
+        time.sleep(60) #Leaving 1 minute time for training the Luis bot
 
         url = "https://westus.api.cognitive.microsoft.com/luis/api/v2.0//apps/"+botIdLuis+"/publish"
         payload = {"versionId":"0.1","isStaging":False}
@@ -95,5 +97,5 @@ def getLuisEndPointUrl(botIdLuis):
                 endpointURL=response.json()['endpointUrl']+"?subscription-key="+subscriptionToken+"&timezoneOffset=0&verbose=true&q="
                 return endpointURL
             except:
-                print("Could not fetch the endpoint in Luis:: trying to get end point after 5 seconds")
-                time.sleep(5)
+                    print("Could not fetch the endpoint in Luis:: trying to get end point after 5 seconds", response.text)
+                    time.sleep(5)
