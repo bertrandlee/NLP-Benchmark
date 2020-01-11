@@ -2,13 +2,13 @@ import sys
 from odfhandle import *
 from watson import *
 TyOfUtt=[]#Reading the type of utterances from input ML_Result csv file
-success=[[],[],[],[]]
+success=[[],[],[],[],[]]
 intent=[]
-matched=[[],[],[],[]]
-precession=[0,0,0,0]
-recall=[0,0,0,0]
-fscore=[0,0,0,0]
-accuracy=[0,0,0,0]
+matched=[[],[],[],[],[]]
+precession=[0,0,0,0,0]
+recall=[0,0,0,0,0]
+fscore=[0,0,0,0,0]
+accuracy=[0,0,0,0,0]
 
 def process_ambiguity(r):
 	r = [cell.value for cell in r]
@@ -29,10 +29,12 @@ def main(ods):
 		matched[1].append(WatsonCleanIntent(x[ 8]))
 		matched[2].append(WatsonCleanIntent(x[11]))
 		matched[3].append(WatsonCleanIntent(x[14]))
+		matched[4].append(WatsonCleanIntent(x[17]))
 		success[0].append(x[4])
 		success[1].append(x[9])
 		success[2].append(x[12])
 		success[3].append(x[15])
+		success[4].append(x[18])
 	numIntents=len(set(intent))+1
 	numrows=numIntents*16
 	colsMax=11
@@ -58,28 +60,28 @@ def writeCSV(sheet,currentIntent=None):
 		sheetInd=sheet[1]
 		sheet=sheet[0]
 		name=sheetInd.name
-		b1=["","KORE.AI: ALL","KORE.AI: NONE","","API.AI:ALL","API.AI:NONE","","LUIS.AI:ALL","LUIS.AI:NONE","","Watson:ALL","Watson:None",""]
+		b1=["","KORE.AI: ALL","KORE.AI: NONE","","API.AI:ALL","API.AI:NONE","","LUIS.AI:ALL","LUIS.AI:NONE","","Watson:ALL","Watson:None","","Taiger: ALL","Taiger: None",""]
 	else:
 		name=sheet
-		b1=["","KORE.AI","","API.AI","","LUIS.AI","","Watson",""]
+		b1=["","KORE.AI","","API.AI","","LUIS.AI","","Watson","","Taiger",""]
 	b2=["TP"]
 	b3=["TN"]
 	b4=["FN"]
 	b5=["FP"]
-	c1=["","KORE.AI","","API.AI","","LUIS.AI","","Watson"]
+	c1=["","KORE.AI","","API.AI","","LUIS.AI","","Watson","","Taiger"]
 	c2=["Precision"]
 	c3=["Recall"]
 	c4=["F Measure"]
 	c5=["Accuracy"]
 
-	arrayD=["Type Of Utterance","Success_Kore.ai","Failure_Kore.ai","Success_Api.ai","Failure_Api.ai","Success_Luis.ai","Failure_Luis.ai","Success_Watson","Failure_Watson","Total Utterances"]
+	arrayD=["Type Of Utterance","Success_Kore.ai","Failure_Kore.ai","Success_Api.ai","Failure_Api.ai","Success_Luis.ai","Failure_Luis.ai","Success_Watson","Failure_Watson","Success_Taiger","Failure_Taiger","Total Utterances"]
 	array1=["Positive"]
 	array2=["Negative"]
 	array3=["Structurally different"]
 	array4=["Stemming and Lemmatization"]
 	array5=["Spell Error"]
 	"""Loop for the three platforms for result table calculation"""
-	for platforms in range(4):
+	for platforms in range(5):
 		totalPositives=0
 		truePositives=0
 		falseNegatives=0

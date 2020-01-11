@@ -9,7 +9,7 @@ def TaigerCreateBot(botName):
     
     try:    
             response = requests.post( url+"authenticate", json=payload, headers=headers)
-            print(response.text)
+            #print(response.text)
     except:
             raise Exception("Error while authenticating with Taiger")
 
@@ -17,13 +17,13 @@ def TaigerCreateBot(botName):
     print("accessToken= ", accessToken)
     
     headers["Authorization"] = "Bearer " + accessToken
-    print(headers)
+    #print(headers)
     
     payload = {"botName":botName}
     
     try:    
             response = requests.post( url+"bots", json=payload, headers=headers)
-            print(response.text)
+            #print(response.text)
     except:
             raise Exception("Error while creating bot for Taiger")
             
@@ -33,7 +33,7 @@ def TaigerCreateBot(botName):
 
     try:    
             response = requests.post( url+"libraries", json=payload, headers=headers)
-            print(response.text)
+            #print(response.text)
     except:
             raise Exception("Error while creating library for Taiger")
             
@@ -51,12 +51,10 @@ def TaigerAddIntentAndUtterance(accessToken, libraryId, Intent, Utterances):
 
     for u in Utterances:
         payload["phrases"].append({"text":u})
-    
-    print("Headers: ", headers)
-    
+        
     try:    
             response = requests.post( url+"intents/setup", json=payload, headers=headers)
-            print(response.text)
+            #print(response.text)
     except:
             raise Exception("Error while setting up intents with Taiger")
 
@@ -67,8 +65,29 @@ def TaigerTrainBot(accessToken, botId):
      
     try:    
             response = requests.post( url, headers=headers)
-            print(response.text)
+            #print(response.text)
     except:
             raise Exception("Error while setting up intents with Taiger")
+
+
+def TaigerFindIntent(accessToken, botId, utterance):
+    url = "https://iconverse-govtech.taiger.io/iconverse-admin/api/external/bots/"+botId+"/message" 
+    headers = {'content-type': "application/json", "Authorization":"Bearer "+accessToken}    
+
+    try:    
+            response = requests.post( url, json=utterance, headers=headers)
+            #print(response.text)
+    except:
+            raise Exception("Error while finding intent with Taiger")
+            
+    if response.status_code != 200:
+        raise Exception("Status code " + str(response.status_code) + " while finding Taiger intent")
+
+    intent = response.json()["intentName"]
+    
+    if intent == "NoInfo" or intent == "Intent Search Fallback Template":
+        intent = "None"
+        
+    return intent
 
 

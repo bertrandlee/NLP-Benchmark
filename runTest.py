@@ -3,6 +3,7 @@ import requests, csv, os, time, sys, urllib, json, base64, hashlib, hmac
 from threading import Thread
 from tqdm import tqdm
 from watson import *
+from taiger import *
 from odfhandle import *
 from configBot import *
 '''Three global arrays declared to get input from the ML csv file to get the utterance, expected task name and the type of utterance and 1 array for the output to capture the matched intent and status(success or failure)'''
@@ -36,6 +37,7 @@ def find_intent3(sheet,i,ses):
         MatchedIntents_DF=['None','Null']
         MatchedIntents_Luis=['None','Null']
         MatchedIntents_Watson=['None','Null','Null']
+        MatchedIntents_Taiger=['None','Null']
         output=[]
         #In the output, appending the inputs and matched intents to compare with the expected task name
         TaskNames[i] = TaskNames[i].replace("\xa0"," ")
@@ -46,7 +48,8 @@ def find_intent3(sheet,i,ses):
         thDF=Thread(target=callDFBot,args=(MatchedIntents_DF,Utterances[i],ses[1]));thDF.start()
         thLUIS=Thread(target=callLUISBot,args=(MatchedIntents_Luis,Utterances[i],ses[2]));thLUIS.start()
         thWatson=Thread(target=callWatsonBot,args=(MatchedIntents_Watson,Utterances[i],ses[3]));thWatson.start()
-        thKORE.join();thDF.join();thLUIS.join();thWatson.join()
+        thTaiger=Thread(target=callTaigerBot,args=(MatchedIntents_Taiger,Utterances[i],ses[4]));thTaiger.start()
+        thKORE.join();thDF.join();thLUIS.join();thWatson.join();thTaiger.join()
         output.append(MatchedIntents_Kore[0])
         if MatchedIntents_Kore[0]==TaskNames[i]:
             output.append('pass')
@@ -57,6 +60,7 @@ def find_intent3(sheet,i,ses):
         output.append(str(MatchedIntents_Kore[1])) # CS score
         output.append(str(MatchedIntents_Kore[2])) # ML score
         output.append(str(MatchedIntents_Kore[3])) # FAQ score
+        
         output.append(MatchedIntents_DF[0])
         if(MatchedIntents_DF[0]==TaskNames[i]):
             output.append('pass')
@@ -78,6 +82,13 @@ def find_intent3(sheet,i,ses):
                 output.append('fail')
         output.append(str(MatchedIntents_Watson[1]))
 
+        output.append(MatchedIntents_Taiger[0])
+        if(MatchedIntents_Taiger[0]==TaskNames[i]):
+            output.append('pass')
+        else:
+            output.append('fail')
+        output.append(str(MatchedIntents_Taiger[1]))
+
         # save the contemporary results for safety
         replaceRow(sheet,output,i+1)
         time.sleep(1)
@@ -85,7 +96,7 @@ def find_intent3(sheet,i,ses):
 def main():
     global outputs, config
     MAP=lambda x,y:list(map(x,y))
-    ses=MAP(lambda x:MAP(lambda y:y(),x),[[requests.session]*4]*NUM_THREADS)
+    ses=MAP(lambda x:MAP(lambda y:y(),x),[[requests.session]*5]*NUM_THREADS)
     th=[None]*NUM_THREADS
     config=json.load(open(sys.argv[1],"r"))
     fr=open(config["FileName"],'r')
@@ -114,9 +125,9 @@ def main():
         if not resultsFileName:resultsFileName='ML_Results-'+timestr+".ods"
         if not resultsFileName.split(".")[-1] == "ods": resultsFileName += ".ods"
     ods = newdoc(doctype='ods', filename=resultsFileName)
-    sheet = Sheet('Results', size=(len(Utterances)+1,18))
+    sheet = Sheet('Results', size=(len(Utterances)+1,20))
     ods.sheets += sheet
-    insertRow(sheet,['Expected Task Name','Utterance','Type of Utterance','Matched Intent(s) Kore','Status','Kore Total CS score','Kore ML score','Kore FAQ Score','Matched Intent(s) DF','Status','ScoreDF','Matched Intent(s) Luis','Status','ScoresLuis','Matched Intent Watson ',"Status","ScoreWatson", "RawWatsonResponse"])
+    insertRow(sheet,['Expected Task Name','Utterance','Type of Utterance','Matched Intent(s) Kore','Status','Kore Total CS score','Kore ML score','Kore FAQ Score','Matched Intent(s) DF','Status','ScoreDF','Matched Intent(s) Luis','Status','ScoresLuis','Matched Intent Watson ',"Status","ScoreWatson", 'Matched Intent(s) Taiger','Status','ScoreTaiger'])
     ods.save()
     outputs = [None]*len(Utterances)
     prev=0
@@ -140,6 +151,14 @@ def main():
         time.sleep(0.4)
     ods.save()
     return resultsFileName
+
+
+def callTaigerBot(MatchedIntents_Taiger, input_data, ses):
+        if config["USETAIGER"]:
+	        intent = TaigerFindIntent(config["taigerAccessToken"], config["taigerBotId"], input_data)
+	        MatchedIntents_Taiger.clear()
+	        MatchedIntents_Taiger.extend([intent, 0])
+    
 
 def callWatsonBot(MatchedIntents_Watson, input_data, ses):
         if config["USEWATSON"]:
