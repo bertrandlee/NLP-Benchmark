@@ -30,7 +30,7 @@ def insertFormula(lenintents):
 def next_set(i,col):
 	return (col+str(13*i+9),col+str(13*i+10),col+str(13*i+11),col+str(13*i+12))
 
-def formula(row,col,lenintent,name):
+def formula(row,col,lenintent,name,total_preds):
 	prec="=IFERROR("
 	rec="=IFERROR("
 	acc="=IFERROR("
@@ -39,16 +39,19 @@ def formula(row,col,lenintent,name):
 	if type(name)==type(""):name = "'"+name+"'."
 	else:name=""
 	tp=name+col+str(row)
-	if type(name)==type(""):tp+= " + " + name+chr(ord(col)+1)+str(row)
+	#if type(name)==type(""):tp+= " + " + name+chr(ord(col)+1)+str(row)
+	tp_all = tp+ " + " + name+chr(ord(col)+1)+str(row)
 	tp = "("+tp+")"
+	tp_all = "("+tp_all+")"
 	tn=name+col+str(row+1)
 	fn=name+col+str(row+2)
 	fp=name+col+str(row+3)
 	p = tp+"/( "+tp+" + "+fp+" )"
-	r = tp+"/("+tp+" + " + fp +" + "+fn+")"
+	r = tp+"/("+tp+" + "+fn+")"
 	prec+= p +"; 0 )"
 	rec+= r + "; 0)"
-	acc+=tp+"/("+tp+"+"+fn+"+"+fp+"); 0)"
+	#acc+=tp+"/("+tp+"+"+fn+"+"+fp+"); 0)"
+	acc+=tp_all+"/"+str(total_preds)+"; 0)"
 	#F+="2*"+tp+"/(2*"+tp+"+"+fp+"+"+fn+"), 0)"
 	F+="2*"+p+"*"+r+"/("+p+"+"+r+"); 0)"
 	return (prec,rec,acc,F)

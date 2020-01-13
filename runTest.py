@@ -157,7 +157,7 @@ def callTaigerBot(MatchedIntents_Taiger, input_data, ses):
         if config["USETAIGER"]:
 	        intent = TaigerFindIntent(config["taigerAccessToken"], config["taigerBotId"], input_data)
 	        MatchedIntents_Taiger.clear()
-	        MatchedIntents_Taiger.extend([intent, 0])
+	        MatchedIntents_Taiger.extend([intent, 1])
     
 
 def callWatsonBot(MatchedIntents_Watson, input_data, ses):

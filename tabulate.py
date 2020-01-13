@@ -102,7 +102,9 @@ def writeCSV(sheet,currentIntent=None):
 		spellFalseNeg=0
 		totalSpell=0
 		intentset = set(intent)
+		intentset.add("None") #Ensure None intent is counted
 		lenintent = len(intentset)
+		total_preds = len(TyOfUtt)
 		if currentIntent:
 			lenintent = 1
 			intentset = set([currentIntent])
@@ -126,10 +128,8 @@ def writeCSV(sheet,currentIntent=None):
 				if(currentintent!=matched[platforms][i] and currentintent == intent[i]):
 					if currentintent == "None":
 						falseNegativesNone +=1
-					elif matched[platforms][i] == "None":
-						falseNegatives += 1
 					else:
-						trueNegatives +=1
+						falseNegatives +=1
 				if(TyOfUtt[i].lower()=="structurally different"):
 					if(success[platforms][i]=="pass"):
 						if(currentintent == None or currentintent==intent[i]):
@@ -172,29 +172,34 @@ def writeCSV(sheet,currentIntent=None):
 			#calculateAndInsert( totalPositives, truePositives+truePositivesNone, falseNegatives+falseNegativesNone, totalNegatives, trueNegatives+trueNegativesNone, falsePositives+falsePositivesNone, currentintent, platforms)
 
 			if currentIntent:
-				(prec,rec,acc,F) = formula(RowNum[0],colNum(len(arrayB[1])),lenintent,name)
+				(prec,rec,acc,F) = formula(RowNum[0],colNum(len(arrayB[1])),lenintent,name,total_preds)
 			else:
-				(prec,rec,acc,F) = formula(RowNum[0],colNum(len(arrayB[1])),lenintent,name)
+				(prec,rec,acc,F) = formula(RowNum[0],colNum(len(arrayB[1])),lenintent,name,total_preds)
+
 			if currentIntent !="None":
 				arrayB[1].append(truePositives)
 			if not currentIntent or currentIntent =="None":
 				arrayB[1].append(truePositivesNone)
 			arrayB[1].append("")
+
 			if currentIntent !="None":
 				arrayB[2].append(trueNegatives)
 			if not currentIntent or currentIntent =="None":
 				arrayB[2].append(trueNegativesNone)
 			arrayB[2].append("")
+
 			if currentIntent !="None":
 				arrayB[3].append(falseNegatives)
 			if not currentIntent or currentIntent =="None":
 				arrayB[3].append(falseNegativesNone)
 			arrayB[3].append("")
+
 			if currentIntent !="None":
 				arrayB[4].append(falsePositives)
 			if not currentIntent or currentIntent =="None":
 				arrayB[4].append(falsePositivesNone)
 			arrayB[4].append("")
+
 			if currentIntent or True:
 				arrayC[1].append(prec)
 				arrayC[1].append("")
