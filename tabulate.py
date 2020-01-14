@@ -5,10 +5,10 @@ TyOfUtt=[]#Reading the type of utterances from input ML_Result csv file
 success=[[],[],[],[],[]]
 intent=[]
 matched=[[],[],[],[],[]]
-precession=[0,0,0,0,0]
-recall=[0,0,0,0,0]
-fscore=[0,0,0,0,0]
-accuracy=[0,0,0,0,0]
+weighted_precision = [0,0,0,0,0]
+weighted_recall = [0,0,0,0,0]
+weighted_f1 = [0,0,0,0,0]
+weighted_accuracy = [0,0,0,0,0]
 
 def process_ambiguity(r):
     r = [cell.value for cell in r]
@@ -55,7 +55,7 @@ def main(ods):
     writeCSV((sheetAll,sheetInd), None)
     ods.save()
 
-def writeCSV(sheet,currentIntent=None):
+def writeCSV(sheet,currentIntent=None):    
     if not currentIntent:
         sheetInd=sheet[1]
         sheet=sheet[0]
@@ -80,7 +80,7 @@ def writeCSV(sheet,currentIntent=None):
     array3=["Structurally different"]
     array4=["Stemming and Lemmatization"]
     array5=["Spell Error"]
-    """Loop for the three platforms for result table calculation"""
+    """Loop for all platforms for result table calculation"""
     for platforms in range(5):
         totalPositives=0
         truePositives=0
@@ -200,7 +200,7 @@ def writeCSV(sheet,currentIntent=None):
                 arrayB[4].append(falsePositivesNone)
             arrayB[4].append("")
 
-            if currentIntent or True:
+            if currentIntent:
                 arrayC[1].append(prec)
                 arrayC[1].append("")
                 arrayC[2].append(rec)
@@ -209,16 +209,58 @@ def writeCSV(sheet,currentIntent=None):
                 arrayC[3].append("")
                 arrayC[4].append(acc)
                 arrayC[4].append("")
+                denom = truePositives + falsePositives
+                if denom == 0:
+                    precision = 0
+                else:
+                    precision = truePositives / (truePositives + falsePositives)
+                denom = truePositives + falseNegatives
+                if denom == 0:
+                    recall = 0
+                else:
+                    recall = truePositives / (truePositives + falseNegatives)
+                denom = precision + recall
+                if denom == 0:
+                    f1 = 0
+                else:
+                    f1 = (2 * precision * recall)/(precision + recall)
+                numCurrIntents = intent.count(currentIntent)        
+                #print("Intent="+currentIntent+",precision="+str(precision)+",recall="+str(recall)+",f1="+str(f1))
+                weighted_precision[platforms] += numCurrIntents * precision
+                weighted_recall[platforms] += numCurrIntents * recall
+                weighted_f1[platforms] += numCurrIntents * f1
+                weighted_accuracy[platforms] += truePositives + truePositivesNone
+            else:
+                weighted_precision[platforms] /= total_preds
+                weighted_recall[platforms] /= total_preds
+                weighted_f1[platforms] /= total_preds
+                weighted_accuracy[platforms] /= total_preds
+                #print("weighted_precision="+str(weighted_precision)+",weighted_recall="+str(weighted_recall)+",weighted_f1="+str(weighted_f1))
+                arrayC[1].append(weighted_precision[platforms])
+                arrayC[1].append("")
+                arrayC[2].append(weighted_recall[platforms])
+                arrayC[2].append("")
+                arrayC[3].append(weighted_f1[platforms])
+                arrayC[3].append("")
+                arrayC[4].append(weighted_accuracy[platforms])
+                arrayC[4].append("")
+                weighted_precision[platforms] = 0
+                weighted_recall[platforms] = 0
+                weighted_f1[platforms] = 0
+                weighted_accuracy[platforms] = 0
+                
+
         except Exception as e:
             print(e)
             continue
+
     array1.append(totalPositives)
     array2.append(totalNegatives)
     array3.append(totalStruct)
     array4.append(totalStem)
     array5.append(totalSpell)
     array=[arrayD,array1,array2,array3,array4,array5]
-    """printing the three result tables for all the three platforms"""
+    """printing the result tables for all platforms"""
     if currentIntent:
         insertRow(sheet,[currentIntent])
     else:

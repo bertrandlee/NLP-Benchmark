@@ -40,9 +40,7 @@ def formula(row,col,lenintent,name,total_preds):
 	else:name=""
 	tp=name+col+str(row)
 	#if type(name)==type(""):tp+= " + " + name+chr(ord(col)+1)+str(row)
-	tp_all = tp+ " + " + name+chr(ord(col)+1)+str(row)
 	tp = "("+tp+")"
-	tp_all = "("+tp_all+")"
 	tn=name+col+str(row+1)
 	fn=name+col+str(row+2)
 	fp=name+col+str(row+3)
@@ -51,7 +49,7 @@ def formula(row,col,lenintent,name,total_preds):
 	prec+= p +"; 0 )"
 	rec+= r + "; 0)"
 	#acc+=tp+"/("+tp+"+"+fn+"+"+fp+"); 0)"
-	acc+=tp_all+"/"+str(total_preds)+"; 0)"
+	acc+="("+tp+"+"+tn+")/"+str(total_preds)+"; 0)"
 	#F+="2*"+tp+"/(2*"+tp+"+"+fp+"+"+fn+"), 0)"
 	F+="2*"+p+"*"+r+"/("+p+"+"+r+"); 0)"
 	return (prec,rec,acc,F)
