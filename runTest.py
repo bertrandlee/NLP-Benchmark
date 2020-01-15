@@ -87,7 +87,6 @@ def find_intent3(sheet,i,ses):
             output.append('pass')
         else:
             output.append('fail')
-        output.append(str(MatchedIntents_Taiger[1]))
 
         # save the contemporary results for safety
         replaceRow(sheet,output,i+1)
@@ -127,7 +126,7 @@ def main():
     ods = newdoc(doctype='ods', filename=resultsFileName)
     sheet = Sheet('Results', size=(len(Utterances)+1,20))
     ods.sheets += sheet
-    insertRow(sheet,['Expected Task Name','Utterance','Type of Utterance','Matched Intent(s) Kore','Status','Kore Total CS score','Kore ML score','Kore FAQ Score','Matched Intent(s) DF','Status','ScoreDF','Matched Intent(s) Luis','Status','ScoresLuis','Matched Intent Watson ',"Status","ScoreWatson", 'Matched Intent(s) Taiger','Status','ScoreTaiger'])
+    insertRow(sheet,['Expected Task Name','Utterance','Type of Utterance','Matched Intent(s) Kore','Status','Kore Total CS score','Kore ML score','Kore FAQ Score','Matched Intent(s) DF','Status','ScoreDF','Matched Intent(s) Luis','Status','ScoresLuis','Matched Intent Watson ',"Status","ScoreWatson", 'Matched Intent(s) Taiger','Status'])
     ods.save()
     outputs = [None]*len(Utterances)
     prev=0
@@ -157,7 +156,7 @@ def callTaigerBot(MatchedIntents_Taiger, input_data, ses):
         if config["USETAIGER"]:
 	        intent = TaigerFindIntent(config["taigerAccessToken"], config["taigerBotId"], input_data)
 	        MatchedIntents_Taiger.clear()
-	        MatchedIntents_Taiger.extend([intent, 1])
+	        MatchedIntents_Taiger.extend([intent])
     
 
 def callWatsonBot(MatchedIntents_Watson, input_data, ses):

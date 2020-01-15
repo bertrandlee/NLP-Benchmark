@@ -23,7 +23,7 @@ def TaigerCreateBot(botName):
     
     try:    
             response = requests.post( url+"bots", json=payload, headers=headers)
-            #print(response.text)
+            print(response.text)
     except:
             raise Exception("Error while creating bot for Taiger")
             
