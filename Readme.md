@@ -76,17 +76,11 @@ When running run.sh you will be asked for several inputs such as access tokens, 
 		authTokenKore="bearer xowAczxCrk4-bSpj3-lQNgcBmGdtIseQxFb6dyFIBZ1cheL6Vdj_1fW-e7R8MgMV"
 * In configBot.py set USEKORE=True to test on kore environment else set it to False
 
-## Configuration for API.ai(OPTIONAL) -:
+## Configuration for Dialogflow (OPTIONAL) -:
 
 * Pre-requisite for this is to create a new bot(referred as agent in api.ai). 
-* Press on the gear icon on the left next to the bot name.
-* Copy the Developer_Access_Token.
-
-		Token_DF="ecf2caaa9841447ba330d73306f976d7"
-
-* In the URL of the page, copy the bot id next to 'editAgent/' .
-
-		botIdDF="15d93a17-4cfa-489d-9058-2f720a88ac7a"
+* Dialogflow v2 API is used. Use the following setup instructions:
+  https://cloud.google.com/dialogflow/docs/quick/setup
 
 #### In configBot.py set USEGOOGLE=True to test on DialogFlow environment else set it to False
 
@@ -118,13 +112,21 @@ When running run.sh you will be asked for several inputs such as access tokens, 
 
 
 ```
-          Precision = (TP of intents + TP of None)/( (TP of intents + TP of None) + FP of intents )
+          Intent Precision = (TP of intent)/( TP of intent + FP of intent )
 
-          Recall = (TP of intents + TP of None)/( (TP of intents + TP of None) + FN of intents )
+	  Overall Precision = Weighted average of Intent Precision
 
-          Fmeasure = 2*(TP of intents + TP of None)/( 2*(TP of intents + TP of None) + FN of intents + FP of intents )
+          Intent Recall = (TP of intent)/( TP of intent + FN of intent )
 
-          Accuracy = (TP of intents + TP of None)/( (TP of intents + TP of None) + FN of intents + FP of intents )
+	  Overall Recall = Weighted average of Intent Recall
+
+          Intent Fmeasure = 2 * (Precision * Recall)/(Precision + Recall)
+
+	  Overall Fmeasure = Weighted average of Intent Fmeasure
+
+          Intent Accuracy = (TP of intent + TN of intent)/(Total predictions)
+
+	  Overall Accuracy = (TP of intents + TP of None)/(Total predictions)
 ```
      2. The Results sheet has the status pass or fail depending on the intent identified matched with expected intent.
      3. The Summary sheet shows Precision, Recall, F Measure and Accuracy Values for all the three platforms.
