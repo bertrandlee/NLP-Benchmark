@@ -290,44 +290,6 @@ def callDFBot(MatchedIntents_DF, input_data,ses):
             score='null'
             print("null score google")
             print("GOOGLE","get", urlDF, "headers=",headers,"params",params)
-                        
-        
-        """
-        querystring = {"v":"20150910","contexts":"shop","lang":lang,"query":query,"sessionId":"12345","timezone":"America/New_York"}
-        params=querystring
-        headers = {
-            'Authorization': "Bearer "+ config["DF_CLIENT_ACCESS_TOKEN"],
-            'cache-control': "no-cache",
-            'Postman-Token': "acfe1c90-1266-455f-96e6-2fbc759e115b"
-            }
-        count = 0
-        while(1):
-            count = count +1
-            try:
-                response = requests.request("GET", urlDF, headers=headers, params=querystring)
-                response.raise_for_status()
-                responsejson = response.json()
-                break
-            except Exception as e:
-                print(e)
-                #time.sleep(11)
-                print("Error while finding intent in google", e)
-                print("GOOGLE","get", urlDF, "headers=",headers,"params",params)
-                if count > 3:
-                    responsejson={} 
-                    break
-                time.sleep(1)
-        if not responsejson=={} and ('result' in responsejson) and ('metadata' in responsejson['result']) and ('intentName' in responsejson['result']['metadata']):
-            matchedIntents_DF=responsejson['result']['metadata']['intentName'].lower()
-            score=responsejson['result']['score']#Getting the confidence score.
-            if(matchedIntents_DF=='Default Fallback Intent'):
-                matchedIntents_DF='None'
-        else:
-            matchedIntents_DF='None'
-            score='null'
-            print("null score google")
-            print("GOOGLE","get", urlDF, "headers=",headers,"params",params)
-        """
     else:
         matchedIntents_DF='None'
         score=0.1
