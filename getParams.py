@@ -21,6 +21,8 @@ while USELUIS not in ["y","n"]: USELUIS=input("please enter y/n only:").lower().
 subscriptionToken=""
 Token_DF=""
 botIdDF=""
+Client_DF=""
+
 if USELUIS == "y":
 	USELUIS=True
 	subscriptionToken=input("Please give your luis.ai subscription token:").strip()
@@ -78,6 +80,18 @@ else:
 	USEWATSON=False
 	watson_uid = ""
 	watson_passwd = ""
+    
+USETAIGER = input("Use Taiger?(y/n)").lower().strip()
+while USETAIGER not in ["y","n"]: USETAIGER=input("please enter y/n only:").lower().strip()
+if USETAIGER == "y":
+	USETAIGER=True
+	taiger_uid = input("please enter Taiger user Id:")
+	taiger_passwd = input("please enter Taiger password:")
+else:
+	USETAIGER=False
+	taiger_uid = ""
+	taiger_passwd = ""
+
 
 fileName = input("Training file name?[default is \"ML_Train.csv\"] ").strip()
 TestFileName = input("Training file name?[default is \"ML_TestData.csv\"] ").strip()
@@ -113,7 +127,8 @@ conf ={
 	"USEGOOGLE":USEDF,
 	"USEWATSON":USEWATSON,
 	"USELUIS":USELUIS,
-	"USEWIT":False,        # ?? why       
+	"USEWIT":False,        # ?? why
+	"USETAIGER":USETAIGER,
 	"subscriptionToken":subscriptionToken,
 	"Token_DF":Token_DF,
 	"botIdDF":botIdDF,
@@ -125,6 +140,8 @@ conf ={
 	"witUserToken":witUserToken,
 	"watson_uid":watson_uid,
 	"watson_passwd":watson_passwd,
+	"taiger_uid":taiger_uid,
+	"taiger_passwd":taiger_passwd,
 	"botName":botName,
 	"threshold":threshold,
 	"RESULTSFILE":"",
