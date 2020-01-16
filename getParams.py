@@ -14,6 +14,7 @@ watson_uid = ""
 watson_passwd = ""
 ssoKore = ""
 KorePlatform = ""
+chatlayerToken= ""
 
 USELUIS=input("Use Luis?(y/n):").lower().strip()
 while USELUIS not in ["y","n"]: USELUIS=input("please enter y/n only:").lower().strip()
@@ -92,6 +93,14 @@ else:
 	taiger_uid = ""
 	taiger_passwd = ""
 
+USECHATLAYER = input("Use Chatlayer?(y/n)").lower().strip()
+while USECHATLAYER not in ["y","n"]: USECHATLAYER=input("please enter y/n only:").lower().strip()
+if USECHATLAYER == "y":
+	USECHATLAYER=True
+	chatlayerToken = input("please enter chatlayer token:")
+else:
+	USECHATLAYER=False
+
 
 fileName = input("Training file name?[default is \"ML_Train.csv\"] ").strip()
 TestFileName = input("Training file name?[default is \"ML_TestData.csv\"] ").strip()
@@ -129,6 +138,7 @@ conf ={
 	"USELUIS":USELUIS,
 	"USEWIT":False,        # ?? why
 	"USETAIGER":USETAIGER,
+	"USECHATLAYER": USECHATLAYER,
 	"subscriptionToken":subscriptionToken,
 	"Token_DF":Token_DF,
 	"botIdDF":botIdDF,
@@ -142,6 +152,7 @@ conf ={
 	"watson_passwd":watson_passwd,
 	"taiger_uid":taiger_uid,
 	"taiger_passwd":taiger_passwd,
+	"chatlayerToken": chatlayerToken,
 	"botName":botName,
 	"threshold":threshold,
 	"RESULTSFILE":"",

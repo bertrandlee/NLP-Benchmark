@@ -2,13 +2,13 @@ import sys
 from odfhandle import *
 from watson import *
 TyOfUtt=[]#Reading the type of utterances from input ML_Result csv file
-success=[[],[],[],[],[]]
+success=[[],[],[],[],[],[]]
 intent=[]
-matched=[[],[],[],[],[]]
-weighted_precision = [0,0,0,0,0]
-weighted_recall = [0,0,0,0,0]
-weighted_f1 = [0,0,0,0,0]
-weighted_accuracy = [0,0,0,0,0]
+matched=[[],[],[],[],[],[]]
+weighted_precision = [0,0,0,0,0,0]
+weighted_recall = [0,0,0,0,0,0]
+weighted_f1 = [0,0,0,0,0,0]
+weighted_accuracy = [0,0,0,0,0,0]
 
 def process_ambiguity(r):
     r = [cell.value for cell in r]
@@ -30,13 +30,15 @@ def main(ods):
         matched[2].append(WatsonCleanIntent(x[11], x[13]))
         matched[3].append(WatsonCleanIntent(x[14], x[16]))
         matched[4].append(WatsonCleanIntent(x[17], "1"))
+        matched[5].append(WatsonCleanIntent(x[19], x[21]))
         success[0].append(x[4])
         success[1].append(x[9])
         success[2].append(x[12])
         success[3].append(x[15])
         success[4].append(x[18])
+        success[5].append(x[20])
     numIntents=len(set(intent))+1
-    numrows=numIntents*16
+    numrows=numIntents*22
     colsMax=11
     if len(ods.sheets) <2:ods.sheets += Sheet()
     if len(ods.sheets) <3:ods.sheets += Sheet()
@@ -60,15 +62,15 @@ def writeCSV(sheet,currentIntent=None):
         sheetInd=sheet[1]
         sheet=sheet[0]
         name=sheetInd.name
-        b1=["","KORE.AI: ALL","KORE.AI: NONE","","API.AI:ALL","API.AI:NONE","","LUIS.AI:ALL","LUIS.AI:NONE","","Watson:ALL","Watson:None","","Taiger: ALL","Taiger: None",""]
+        b1=["","KORE.AI: ALL","KORE.AI: NONE","","API.AI:ALL","API.AI:NONE","","LUIS.AI:ALL","LUIS.AI:NONE","","Watson:ALL","Watson:None","","Taiger: ALL","Taiger: None","","Chatlayer: ALL","Chatlayer: None",""]
     else:
         name=sheet
-        b1=["","KORE.AI","","API.AI","","LUIS.AI","","Watson","","Taiger",""]
+        b1=["","KORE.AI","","API.AI","","LUIS.AI","","Watson","","Taiger","","Chatlayer",""]
     b2=["TP"]
     b3=["TN"]
     b4=["FN"]
     b5=["FP"]
-    c1=["","KORE.AI","","API.AI","","LUIS.AI","","Watson","","Taiger"]
+    c1=["","KORE.AI","","API.AI","","LUIS.AI","","Watson","","Taiger","","Chatlayer"]
     c2=["Precision"]
     c3=["Recall"]
     c4=["F Measure"]
@@ -81,7 +83,7 @@ def writeCSV(sheet,currentIntent=None):
     array4=["Stemming and Lemmatization"]
     array5=["Spell Error"]
     """Loop for all platforms for result table calculation"""
-    for platforms in range(5):
+    for platforms in range(6):
         totalPositives=0
         truePositives=0
         falseNegatives=0

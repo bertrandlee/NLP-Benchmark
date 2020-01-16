@@ -7,6 +7,7 @@ from kore import *
 from luis import *
 from watson import *
 from taiger import *
+from chatlayer import *
 import wit
 
 #Global varibles used for reading input from the csv file
@@ -101,6 +102,13 @@ def main():
             print("Training Taiger bot")
             TaigerTrainBot(taigerAccessToken, taigerBotId)
 
+        if USECHATLAYER:
+            chatlayerSession = requests.session()
+            trainChatlayer(chatlayerSession, intents, utterances, botName, chatlayerToken)
+            print("Train Chatlayer bot")
+        else:
+            print("Not training Chatlayer")
+
         print("Creating the config file (testconfig.json) for the runTest.py file.")
         createConfigFile(botName,botIdKore,userIdKore,authTokenKore,KorePlatform,urlL[0],botIdDF,Token_DF,Client_DF,watsonBotId,witBotToken,taigerAccessToken,taigerBotId)
 
@@ -159,6 +167,9 @@ def createConfigFile(botName,botIdKore,userIdKore,authTokenKore,KorePlatform,url
          "USETAIGER":USETAIGER,
          "taigerAccessToken":taigerAccessToken,
          "taigerBotId":taigerBotId,
+         "USECHATLAYER": USECHATLAYER,
+         "botNameChatlayer": botName,
+         "chatlayerToken": chatlayerToken,
 		"lang":lang,
 		"RESULTSFILE":RESULTSFILE,
                 "threshold" : threshold

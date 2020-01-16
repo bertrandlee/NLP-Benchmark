@@ -19,6 +19,7 @@ USELUIS =  conf["USELUIS"]  #False
 USEWATSON =  conf["USEWATSON"]  #False
 USEWIT =  conf["USEWIT"]  #False
 USETAIGER = conf["USETAIGER"]
+USECHATLAYER = conf["USECHATLAYER"]
 
 # Kore.ai
 KorePlatform =  conf["KorePlatform"]  #"https://bots.kore.ai"
@@ -46,4 +47,7 @@ witUserToken =  conf["witUserToken"]
 #Taiger
 taiger_uid = conf["taiger_uid"]
 taiger_passwd = conf["taiger_passwd"]
+
+# Chatlayer.ai
+chatlayerToken = conf["chatlayerToken"]
 

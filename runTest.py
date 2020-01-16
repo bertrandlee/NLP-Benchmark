@@ -4,6 +4,7 @@ from threading import Thread
 from tqdm import tqdm
 from watson import *
 from taiger import *
+from chatlayer import *
 from odfhandle import *
 from configBot import *
 '''Three global arrays declared to get input from the ML csv file to get the utterance, expected task name and the type of utterance and 1 array for the output to capture the matched intent and status(success or failure)'''
@@ -38,6 +39,7 @@ def find_intent3(sheet,i,ses):
         MatchedIntents_Luis=['None','Null']
         MatchedIntents_Watson=['None','Null','Null']
         MatchedIntents_Taiger=['None','Null']
+        MatchedIntents_Chatlayer = ['None', 'Null', 'Null']
         output=[]
         #In the output, appending the inputs and matched intents to compare with the expected task name
         TaskNames[i] = TaskNames[i].replace("\xa0"," ")
@@ -49,7 +51,8 @@ def find_intent3(sheet,i,ses):
         thLUIS=Thread(target=callLUISBot,args=(MatchedIntents_Luis,Utterances[i],ses[2]));thLUIS.start()
         thWatson=Thread(target=callWatsonBot,args=(MatchedIntents_Watson,Utterances[i],ses[3]));thWatson.start()
         thTaiger=Thread(target=callTaigerBot,args=(MatchedIntents_Taiger,Utterances[i],ses[4]));thTaiger.start()
-        thKORE.join();thDF.join();thLUIS.join();thWatson.join();thTaiger.join()
+        thChatlayer=Thread(target=callChatlayerBot(MatchedIntents_Chatlayer, Utterances[i], ses[4])); thChatlayer.start()
+        thKORE.join();thDF.join();thLUIS.join();thWatson.join();thTaiger.join();thChatlayer.join()
         output.append(MatchedIntents_Kore[0])
         if MatchedIntents_Kore[0]==TaskNames[i]:
             output.append('pass')
@@ -88,6 +91,13 @@ def find_intent3(sheet,i,ses):
         else:
             output.append('fail')
 
+        output.append(MatchedIntents_Chatlayer[0]) #matched intent
+        if(MatchedIntents_Chatlayer[0] == TaskNames[i]):
+                output.append('pass')
+        else:
+                output.append('fail')
+        output.append(str(MatchedIntents_Chatlayer[1])) #score
+
         # save the contemporary results for safety
         replaceRow(sheet,output,i+1)
         time.sleep(1)
@@ -95,7 +105,7 @@ def find_intent3(sheet,i,ses):
 def main():
     global outputs, config
     MAP=lambda x,y:list(map(x,y))
-    ses=MAP(lambda x:MAP(lambda y:y(),x),[[requests.session]*5]*NUM_THREADS)
+    ses=MAP(lambda x:MAP(lambda y:y(),x),[[requests.session]*6]*NUM_THREADS)
     th=[None]*NUM_THREADS
     config=json.load(open(sys.argv[1],"r"))
     fr=open(config["FileName"],'r')
@@ -124,9 +134,9 @@ def main():
         if not resultsFileName:resultsFileName='ML_Results-'+timestr+".ods"
         if not resultsFileName.split(".")[-1] == "ods": resultsFileName += ".ods"
     ods = newdoc(doctype='ods', filename=resultsFileName)
-    sheet = Sheet('Results', size=(len(Utterances)+1,20))
+    sheet = Sheet('Results', size=(len(Utterances)+1,23))
     ods.sheets += sheet
-    insertRow(sheet,['Expected Task Name','Utterance','Type of Utterance','Matched Intent(s) Kore','Status','Kore Total CS score','Kore ML score','Kore FAQ Score','Matched Intent(s) DF','Status','ScoreDF','Matched Intent(s) Luis','Status','ScoresLuis','Matched Intent Watson ',"Status","ScoreWatson", 'Matched Intent(s) Taiger','Status'])
+    insertRow(sheet,['Expected Task Name','Utterance','Type of Utterance','Matched Intent(s) Kore','Status','Kore Total CS score','Kore ML score','Kore FAQ Score','Matched Intent(s) DF','Status','ScoreDF','Matched Intent(s) Luis','Status','ScoresLuis','Matched Intent Watson ',"Status","ScoreWatson", 'Matched Intent(s) Taiger','Status', 'Matched Intent Chatlayer', 'Status', 'ScoreChatlayer'])
     ods.save()
     outputs = [None]*len(Utterances)
     prev=0
@@ -150,6 +160,14 @@ def main():
         time.sleep(0.4)
     ods.save()
     return resultsFileName
+
+
+def callChatlayerBot(MatchedIntents_Chatlayer, input_data, ses):
+    if config["USECHATLAYER"]:
+        # ses is unused for now.
+        intent, confidence = ChatlayerFindIntent(botName, input_data, chatlayerToken)
+        MatchedIntents_Chatlayer.clear()
+        MatchedIntents_Chatlayer.extend([intent, confidence])
 
 
 def callTaigerBot(MatchedIntents_Taiger, input_data, ses):
@@ -322,6 +340,7 @@ def callLUISBot(MatchedIntents_Luis,input_data,ses):
         score=0.1
     MatchedIntents_Luis.clear()
     MatchedIntents_Luis.extend([matchedIntents_Luis,score])
+
 
 if __name__ == "__main__":
     if len(sys.argv) !=2:
